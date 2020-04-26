@@ -1,5 +1,5 @@
 {
-  "name": "fasterr_next",
+  "name": "fasterr",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -14,6 +14,19 @@
     "react-dom": "16.13.1"
   },
   "devDependencies": {
+    "husky": "^4.2.5",
+    "lint-staged": "^10.1.7",
     "prettier": "^2.0.5"
+  },
+  "lint-staged": {
+    "*.js": [
+      "npm run format",
+      "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   }
 }
