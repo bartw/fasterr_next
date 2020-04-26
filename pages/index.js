@@ -7,7 +7,7 @@ const Home = () => (
       <link rel="icon" href="/favicon.ico" />
     </Head>
     <div>
-      <h1>Fasterr</h1>
+      <h1 className="text-2xl">Fasterr</h1>
     </div>
   </>
 );
