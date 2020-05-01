@@ -1,6 +1,6 @@
 import React from "react";
 import { useAuth, useRedirectUnauthenticated } from "../auth";
-import Button from "../components/Button";
+import NavLinkButton from "../components/NavLinkButton";
 import Layout from "../components/Layout";
 
 const Dashboard = () => {
@@ -14,13 +14,13 @@ const Dashboard = () => {
       nav={
         <ul>
           <li className="inline-block ml-4">
-            <Button
+            <NavLinkButton
               onClick={() => {
                 auth.signOut();
               }}
             >
               Sign out
-            </Button>
+            </NavLinkButton>
           </li>
         </ul>
       }

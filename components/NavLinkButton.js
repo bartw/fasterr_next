@@ -1,16 +1,23 @@
 import React from "react";
 import { motion } from "framer-motion";
-import Link from "next/link";
 
-const NavLinkButton = ({ href, children }) => (
-  <Link href={href} passHref>
-    <motion.a
-      whileHover={{ y: -1 }}
-      className="inline-block p-2 rounded bg-pink-500 text-white"
+const NavLinkButton = ({ onClick, children }) => (
+  <motion.button
+    onClick={onClick}
+    whileHover="hover"
+    className="inline-block p-2 cursor-pointer"
+  >
+    <motion.span
+      variants={{
+        hover: { borderBottomWidth: 2 },
+      }}
+      transition={{ duration: 0.1 }}
+      style={{ borderBottomWidth: 0 }}
+      className="border-gray-700"
     >
       {children}
-    </motion.a>
-  </Link>
+    </motion.span>
+  </motion.button>
 );
 
 export default NavLinkButton;

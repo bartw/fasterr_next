@@ -3,7 +3,7 @@ import { useRedirectAuthenticated } from "../auth";
 import ExternalLink from "../components/ExternalLink";
 import Highlight from "../components/Highlight";
 import NavLink from "../components/NavLink";
-import NavLinkButton from "../components/NavLinkButton";
+import ButtonNavLink from "../components/ButtonNavLink";
 import Layout from "../components/Layout";
 
 const Home = () => {
@@ -18,7 +18,7 @@ const Home = () => {
             <NavLink href="/signin">Sign in</NavLink>
           </li>
           <li className="inline-block ml-4">
-            <NavLinkButton href="/signup">Sign up</NavLinkButton>
+            <ButtonNavLink href="/signup">Sign up</ButtonNavLink>
           </li>
         </ul>
       }
@@ -50,7 +50,7 @@ const Home = () => {
         you.
       </p>
       <div className="my-12 text-center">
-        <NavLinkButton href="/signup">Sign up now</NavLinkButton>
+        <ButtonNavLink href="/signup">Sign up now</ButtonNavLink>
       </div>
       <p>
         Please <Highlight>consult a doctor</Highlight> before performing any
