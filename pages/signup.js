@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useRedirectAuthenticated } from "../auth";
 import Button from "../components/Button";
 import FormElement from "../components/FormElement";
 import Input from "../components/Input";
@@ -6,6 +7,8 @@ import InternalLink from "../components/InternalLink";
 import Layout from "../components/Layout";
 
 const SignUp = () => {
+  useRedirectAuthenticated();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [pending, setPending] = useState(false);
