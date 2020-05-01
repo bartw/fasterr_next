@@ -13,13 +13,13 @@ const Layout = ({ title, nav, children }) => (
         <header className="mt-4 mb-6 flex">
           <Link href="/">
             <a>
-              <h1 className="text-4xl">Fasterr</h1>
+              <img className="h-32" src="/logo.svg" alt="Fasterr logo" />
             </a>
           </Link>
           <div className="flex-1"></div>
           {nav}
         </header>
-        <main>{children}</main>
+        <main className="mb-2">{children}</main>
       </div>
     </div>
   </>
