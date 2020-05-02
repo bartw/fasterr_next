@@ -5,6 +5,7 @@ const Input = ({
   placeholder = "",
   value = "",
   disabled = false,
+  step,
   onChange = () => {},
 }) => (
   <input
@@ -16,6 +17,7 @@ const Input = ({
     className={`border-2 rounded border-gray-200 bg-white p-2 w-full ${
       disabled ? "text-gray-500" : "text-black"
     }`}
+    step={step}
   />
 );
 
