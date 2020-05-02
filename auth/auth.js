@@ -30,11 +30,12 @@ class Auth {
           isAuthenticated = true;
           fireCallbacks();
           break;
-        case "signIn_failure":
         case "signOut":
           isAuthenticated = false;
           fireCallbacks();
           break;
+        case "signIn_failure":
+        case "signUp_failure":
         case "configured":
           break;
         default:
