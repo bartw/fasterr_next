@@ -24,7 +24,7 @@ const SignIn = () => {
     setHasError(false);
     setPending(true);
 
-    auth.signIn({ email, password }).catch(() => {
+    auth.signIn({ email, password }).catch(({ code }) => {
       if (code === "UserNotConfirmedException") {
         router.push({
           pathname: "/confirm-signup",
