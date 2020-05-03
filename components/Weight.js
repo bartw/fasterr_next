@@ -31,7 +31,7 @@ const ADD_WEIGHT = gql`
 
 const WeightForm = ({ currentWeight }) => {
   const [addWeight] = useMutation(ADD_WEIGHT);
-  const [weight, setWeight] = useState(currentWeight || 0);
+  const [weight, setWeight] = useState(gramToKilo(currentWeight || 0));
   const [pending, setPending] = useState(false);
   const [hasError, setHasError] = useState(false);
 
@@ -42,7 +42,7 @@ const WeightForm = ({ currentWeight }) => {
     setHasError(false);
 
     addWeight({
-      variables: { value: weight },
+      variables: { value: kiloToGram(weight) },
       update: (store, { data: { addWeight } }) => {
         const data = store.readQuery({ query: WEIGHTS });
         store.writeQuery({
@@ -65,8 +65,8 @@ const WeightForm = ({ currentWeight }) => {
         <Input
           type="number"
           placeholder="Weight"
-          value={gramToKilo(weight)}
-          onChange={(value) => setWeight(kiloToGram(value))}
+          value={weight}
+          onChange={(value) => setWeight(value)}
           step="0.1"
         />
       </FormElement>
