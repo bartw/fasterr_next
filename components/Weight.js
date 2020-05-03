@@ -8,6 +8,9 @@ import Input from "../components/Input";
 
 const DECIMAL_PLACES = 1;
 
+const gramToKilo = (value) => parseFloat(value / 1000).toFixed(DECIMAL_PLACES);
+const kiloToGram = (value) => value * 1000;
+
 const WEIGHTS = gql`
   query Weights {
     weights {
@@ -28,9 +31,7 @@ const ADD_WEIGHT = gql`
 
 const WeightForm = ({ currentWeight }) => {
   const [addWeight] = useMutation(ADD_WEIGHT);
-  const [weight, setWeight] = useState(
-    parseFloat(currentWeight || 0).toFixed(DECIMAL_PLACES)
-  );
+  const [weight, setWeight] = useState(currentWeight || 0);
   const [pending, setPending] = useState(false);
   const [hasError, setHasError] = useState(false);
 
@@ -41,7 +42,7 @@ const WeightForm = ({ currentWeight }) => {
     setHasError(false);
 
     addWeight({
-      variables: { value: weight * 1000 },
+      variables: { value: weight },
       update: (store, { data: { addWeight } }) => {
         const data = store.readQuery({ query: WEIGHTS });
         store.writeQuery({
@@ -64,10 +65,8 @@ const WeightForm = ({ currentWeight }) => {
         <Input
           type="number"
           placeholder="Weight"
-          value={weight}
-          onChange={(value) => {
-            setWeight(parseFloat(value).toFixed(DECIMAL_PLACES));
-          }}
+          value={gramToKilo(weight)}
+          onChange={(value) => setWeight(kiloToGram(value))}
           step="0.1"
         />
       </FormElement>
@@ -81,6 +80,14 @@ const WeightForm = ({ currentWeight }) => {
       {hasError && <ErrorFeedback />}
     </form>
   );
+};
+
+const toDateTime = (timestamp) => {
+  const date = new Date(+timestamp);
+  return `${date.toLocaleDateString()} ${date.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  })}`;
 };
 
 const Weight = () => {
@@ -98,13 +105,11 @@ const Weight = () => {
 
   return (
     <div>
-      <WeightForm
-        currentWeight={weights.length ? weights[0].value / 1000 : 0}
-      />
+      <WeightForm currentWeight={weights.length ? weights[0].value : 0} />
       <ul>
         {weights.map(({ timestamp, value }) => (
           <li key={timestamp}>
-            {timestamp} - {value}
+            {toDateTime(timestamp)} - {gramToKilo(value)} KG
           </li>
         ))}
       </ul>

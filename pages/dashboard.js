@@ -1,6 +1,6 @@
 import React from "react";
 import { ApolloProvider } from "@apollo/react-hooks";
-import { useRedirectUnauthenticated } from "../auth";
+import { useAuth, useRedirectUnauthenticated } from "../auth";
 import { useApolloClient } from "../graphql";
 import NavLinkButton from "../components/NavLinkButton";
 import Layout from "../components/Layout";
@@ -9,6 +9,7 @@ import Weight from "../components/Weight";
 const Dashboard = () => {
   useRedirectUnauthenticated();
 
+  const auth = useAuth();
   const client = useApolloClient();
 
   if (!client) {

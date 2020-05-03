@@ -2,19 +2,15 @@ import { ApolloServer, gql } from "apollo-server-micro";
 import axios from "axios";
 import jwt from "jsonwebtoken";
 import jwkToPem from "jwk-to-pem";
+import {
+  DynamoDBClient,
+  QueryCommand,
+  PutItemCommand,
+} from "@aws-sdk/client-dynamodb";
 
 const JWKS_URL = `https://cognito-idp.${process.env.REGION}.amazonaws.com/${process.env.USER_POOL_ID}/.well-known/jwks.json`;
 
-const weights = [
-  {
-    value: 60000,
-    timestamp: "1584428499491",
-  },
-  {
-    value: 61000,
-    timestamp: "1588428499491",
-  },
-];
+const TABLE_WEIGHT = "fasterr_weight";
 
 const typeDefs = gql`
   type Weight {
@@ -33,22 +29,51 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    weights: () =>
-      weights.sort((a, b) => {
-        if (a.timestamp > b.timestamp) {
-          return -1;
-        }
-        if (a.timestamp < b.timestamp) {
-          return 1;
-        }
-        return 0;
-      }),
+    weights: (_parent, _args, { userId, dbClient }) =>
+      dbClient
+        .send(
+          new QueryCommand({
+            TableName: TABLE_WEIGHT,
+            KeyConditionExpression: "user_id = :userId",
+            ExpressionAttributeValues: {
+              ":userId": { S: userId },
+            },
+          })
+        )
+        .then(({ Items: items }) =>
+          items
+            .map(
+              ({
+                user_id: { S: userId },
+                timestamp: { S: timestamp },
+                value: { N: value },
+              }) => ({ userId, timestamp, value: parseInt(value, 10) })
+            )
+            .sort((a, b) => {
+              if (a.timestamp > b.timestamp) {
+                return -1;
+              }
+              if (a.timestamp < b.timestamp) {
+                return 1;
+              }
+              return 0;
+            })
+        ),
   },
   Mutation: {
-    addWeight: (parent, { value }) => {
-      const weight = { value, timestamp: new Date().getTime().toString() };
-      weights.push(weight);
-      return weight;
+    addWeight: (_parent, { value }, { userId, dbClient }) => {
+      const newWeight = { value, timestamp: new Date().getTime().toString() };
+
+      const params = {
+        TableName: TABLE_WEIGHT,
+        Item: {
+          user_id: { S: userId },
+          timestamp: { S: newWeight.timestamp },
+          value: { N: newWeight.value.toString() },
+        },
+      };
+
+      return dbClient.send(new PutItemCommand(params)).then(() => newWeight);
     },
   },
 };
@@ -75,7 +100,9 @@ const apolloServer = new ApolloServer({
         algorithms: ["RS256"],
       });
 
-      return { userId: decodedVerifiedToken.sub };
+      const dbClient = new DynamoDBClient({ region: process.env.REGION });
+
+      return { userId: decodedVerifiedToken.sub, dbClient };
     }),
 });
 
