@@ -7,8 +7,11 @@ import {
   QueryCommand,
   PutItemCommand,
 } from "@aws-sdk/client-dynamodb";
+import { CognitoIdentityClient } from "@aws-sdk/client-cognito-identity";
+import { fromCognitoIdentityPool } from "@aws-sdk/credential-provider-cognito-identity";
 
-const JWKS_URL = `https://cognito-idp.${process.env.REGION}.amazonaws.com/${process.env.USER_POOL_ID}/.well-known/jwks.json`;
+const COGNITO_IDP = `cognito-idp.${process.env.REGION}.amazonaws.com/${process.env.USER_POOL_ID}`;
+const JWKS_URL = `https://${COGNITO_IDP}/.well-known/jwks.json`;
 
 const TABLE_WEIGHT = "fasterr_weight";
 
@@ -100,9 +103,19 @@ const apolloServer = new ApolloServer({
         algorithms: ["RS256"],
       });
 
-      const dbClient = new DynamoDBClient({ region: process.env.REGION });
+      const userId = decodedVerifiedToken.sub;
 
-      return { userId: decodedVerifiedToken.sub, dbClient };
+      const dbClient = new DynamoDBClient({
+        region: process.env.REGION,
+        credentials: fromCognitoIdentityPool({
+          client: new CognitoIdentityClient({ region: process.env.REGION }),
+          logins: { [COGNITO_IDP]: token },
+          identityPoolId: process.env.IDENTITY_POOL_ID,
+          userIdentifier: userId,
+        }),
+      });
+
+      return { userId, dbClient };
     }),
 });
 
